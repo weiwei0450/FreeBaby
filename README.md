@@ -164,6 +164,47 @@ streamlit run frontends/stapp.py --server.port 19590
 
 ---
 
+## 📱 Mobile (Termux + Voice)
+
+FreeBaby can run **independently on Android** via Termux, with voice input/output and screen automation — no PC needed.
+
+**Architecture:**
+```
+Termux (brain)          AutoX.js (hands)        Termux:API (ears + mouth)
+┌──────────────┐       ┌──────────────┐        ┌──────────────────┐
+│ FreeBaby     │ HTTP  │ Accessibility│        │ speech-to-text   │
+│ + LLM API    │◄─────►│ tap/swipe    │        │ + edge-tts       │
+└──────────────┘       └──────────────┘        └──────────────────┘
+```
+
+### Quick Setup
+
+```bash
+# In Termux
+bash <(curl -s https://raw.githubusercontent.com/weiwei0450/FreeBaby/main/setup_termux.sh)
+# Or: git clone the repo and run setup_termux.sh locally
+```
+
+**Manual steps:**
+1. Install [Termux:API](https://f-droid.org/en/packages/com.termux.api/) from F-Droid
+2. Install [AutoX.js](https://github.com/kkevsekk1/AutoX) — enable HTTP server on port 8765
+3. Edit `~/FreeBaby/mykey.py` with your API key
+4. `cd ~/FreeBaby && python voice_agent.py`
+
+### Voice Mode
+
+Hold button to speak → LLM decides → auto-execute → voice reply. No wake word needed — voice is only active when the app is running.
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `voice_agent.py` | Voice-driven agent loop (the main mobile entry point) |
+| `mobile_adapter.py` | Bridge to AutoX.js (UI) + Termux:API (voice) |
+| `setup_termux.sh` | One-command Termux environment setup |
+
+---
+
 ## 🤖 Bot Interface (Optional)
 
 ### Telegram Bot
