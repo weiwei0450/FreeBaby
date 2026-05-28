@@ -8,6 +8,17 @@
 
 ---
 <a name="english"></a>
+## 📥 Download
+
+| Version | Size | Link |
+|---------|------|------|
+| **Windows (exe)** | 82 MB | [FreeBaby-v1.0.0-win64.zip](https://github.com/weiwei0450/FreeBaby/releases/download/v1.0.0/FreeBaby-v1.0.0-win64.zip) |
+| **Source code** | 15 MB | [FreeBaby-v1.0.0-source.zip](https://github.com/weiwei0450/FreeBaby/releases/download/v1.0.0/FreeBaby-v1.0.0-source.zip) |
+
+> Windows exe: Extract and run `FreeBaby.exe` — no Python required.
+> Source: `git clone` + `pip install -r requirements.txt` + `python launch.pyw`
+
+
 ## 🌟 Overview
 
 **FreeBaby** is a minimal, self-evolving autonomous agent framework. Its core is just **~3K lines of code**. Through **9 atomic tools + a ~100-line Agent Loop**, it grants any LLM system-level control over a local computer — covering browser, terminal, filesystem, keyboard/mouse input, screen vision, and mobile devices (ADB).
