@@ -75,7 +75,7 @@ After a few weeks, your agent instance will have a skill tree no one else in the
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/lsdefine/FreeBaby.git
+git clone https://github.com/weiwei0450/FreeBaby.git
 cd FreeBaby
 
 # 2. Install minimal dependencies
@@ -94,7 +94,7 @@ python launch.pyw
 If you prefer a modern Python workflow, FreeBaby also provides a minimal `pyproject.toml`:
 
 ```bash
-git clone https://github.com/lsdefine/FreeBaby.git
+git clone https://github.com/weiwei0450/FreeBaby.git
 cd FreeBaby
 uv pip install -e ".[ui]"        # Core + GUI dependencies
 cp mykey_template.py mykey.py
@@ -292,7 +292,7 @@ MIT License — see [LICENSE](LICENSE)
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/lsdefine/FreeBaby.git
+git clone https://github.com/weiwei0450/FreeBaby.git
 cd FreeBaby
 
 # 2. 安装最小依赖
@@ -311,7 +311,7 @@ python launch.pyw
 如果你习惯现代 Python 工作流，FreeBaby 也提供了一个最小化的 `pyproject.toml`：
 
 ```bash
-git clone https://github.com/lsdefine/FreeBaby.git
+git clone https://github.com/weiwei0450/FreeBaby.git
 cd FreeBaby
 uv pip install -e ".[ui]"        # 核心 + GUI 依赖
 cp mykey_template.py mykey.py
@@ -513,10 +513,10 @@ MIT License — 详见 [LICENSE](LICENSE)
 
 ## 📈 Star History
 
-<a href="https://star-history.com/#lsdefine/FreeBaby&Date">
+<a href="https://star-history.com/#weiwei0450/FreeBaby&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=lsdefine/FreeBaby&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=lsdefine/FreeBaby&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=lsdefine/FreeBaby&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=weiwei0450/FreeBaby&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=weiwei0450/FreeBaby&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=weiwei0450/FreeBaby&type=Date" />
  </picture>
 </a>
