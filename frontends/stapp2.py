@@ -856,8 +856,8 @@ def build_header_agent_badge_script() -> str:
 (() => {
     const hostWin = window.parent || window;
     const hostDoc = hostWin.document || document;
-    const BADGE_ID = 'generic-agent-header-badge';
-    const STYLE_ID = 'generic-agent-header-badge-style';
+    const BADGE_ID = 'free-baby-header-badge';
+    const STYLE_ID = 'free-baby-header-badge-style';
 
     const ensureStyle = () => {
         if (hostDoc.getElementById(STYLE_ID)) return;
@@ -930,10 +930,10 @@ def build_header_agent_badge_script() -> str:
         }
     };
 
-    if (hostWin.__genericAgentHeaderBadgeTimer) {
-        hostWin.clearInterval(hostWin.__genericAgentHeaderBadgeTimer);
+    if (hostWin.__freeBabyHeaderBadgeTimer) {
+        hostWin.clearInterval(hostWin.__freeBabyHeaderBadgeTimer);
     }
-    hostWin.__genericAgentHeaderBadgeTimer = hostWin.setInterval(ensureBadge, 500);
+    hostWin.__freeBabyHeaderBadgeTimer = hostWin.setInterval(ensureBadge, 500);
     hostWin.setTimeout(ensureBadge, 80);
     hostWin.setTimeout(ensureBadge, 400);
     ensureBadge();
