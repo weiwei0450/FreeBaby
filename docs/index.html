@@ -3,253 +3,360 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FreeBaby - 自进化AI Agent框架</title>
+<title>FreeBaby - Token-Efficient Self-Evolving Agent Framework</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0a0a0a;--card:#141414;--border:#262626;--text:#e8e8e8;--muted:#888;--accent:#4f9cf7;--accent2:#7c3aed;--green:#10b981}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
-a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-
-.hero{text-align:center;padding:80px 20px 60px;background:linear-gradient(135deg,#0a0a0a 0%,#1a1a2e 50%,#0a0a0a 100%);position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 50%,rgba(79,156,247,0.08) 0%,transparent 50%),radial-gradient(circle at 70% 50%,rgba(124,58,237,0.08) 0%,transparent 50%);animation:pulse 8s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:0.5}50%{opacity:1}}
-.hero h1{font-size:3.5rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:16px;position:relative}
-.hero p{font-size:1.2rem;color:var(--muted);max-width:600px;margin:0 auto 30px;position:relative}
-.badges{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative}
-.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;background:var(--card);border:1px solid var(--border);font-size:0.85rem;color:var(--text)}
-.badge .dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:blink 2s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
-
-.container{max-width:900px;margin:0 auto;padding:0 20px}
-nav{position:sticky;top:0;z-index:100;background:rgba(10,10,10,0.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:12px 0}
-nav .container{display:flex;gap:24px;align-items:center;overflow-x:auto}
-nav a{color:var(--muted);font-size:0.9rem;white-space:nowrap;transition:color 0.2s}nav a:hover{color:var(--accent);text-decoration:none}
-
-section{padding:60px 0;border-bottom:1px solid var(--border)}
-section:last-child{border-bottom:none}
-h2{font-size:2rem;margin-bottom:24px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-h3{font-size:1.3rem;margin:24px 0 12px;color:var(--text)}
-p,li{color:var(--muted);margin-bottom:12px}
-ul{padding-left:20px}
-li{margin-bottom:8px}
-
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin:30px 0}
-.stat{text-align:center;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px}
-.stat .num{font-size:2.5rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.stat .label{color:var(--muted);font-size:0.85rem;margin-top:4px}
-
-.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:24px 0}
-.feature{padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;transition:border-color 0.3s}
-.feature:hover{border-color:var(--accent)}
-.feature h4{font-size:1.1rem;margin-bottom:8px;color:var(--text)}
-.feature p{font-size:0.9rem;margin:0}
-
-.demo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:24px 0}
-.demo{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:transform 0.3s}
-.demo:hover{transform:translateY(-4px)}
-.demo img{width:100%;height:200px;object-fit:cover}
-.demo .info{padding:16px}
-.demo .info h4{margin-bottom:6px}
-.demo .info p{font-size:0.85rem;margin:0}
-
-.code-block{background:#1a1a2e;border:1px solid var(--border);border-radius:8px;padding:20px;margin:16px 0;overflow-x:auto}
-.code-block code{font-family:"Fira Code",monospace;font-size:0.9rem;color:#a5f3fc;line-height:1.6}
-.code-block .comment{color:#6b7280}
-.code-block .cmd{color:var(--green)}
-
-table{width:100%;border-collapse:collapse;margin:16px 0}
-th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--border)}
-th{color:var(--accent);font-weight:600;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em}
-td{color:var(--muted);font-size:0.9rem}
-
-.install-steps{counter-reset:step}
-.install-steps .step{display:flex;gap:16px;margin:20px 0;padding:20px;background:var(--card);border:1px solid var(--border);border-radius:12px}
-.install-steps .step::before{counter-increment:step;content:counter(step);display:flex;align-items:center;justify-content:center;min-width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:50%;font-weight:700;font-size:1.1rem;color:#fff}
-.install-steps .step .content h4{margin-bottom:8px;color:var(--text)}
-.install-steps .step .content p{margin:0;font-size:0.9rem}
-
-footer{text-align:center;padding:40px 20px;color:var(--muted);font-size:0.85rem;border-top:1px solid var(--border)}
-footer a{color:var(--accent)}
-
-@media(max-width:768px){.hero h1{font-size:2.2rem}.hero p{font-size:1rem}.stats{grid-template-columns:repeat(2,1fr)}}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d1117; color: #c9d1d9; line-height: 1.7; }
+  .header { text-align: center; padding: 60px 20px 30px; background: linear-gradient(135deg, #0d1117, #161b22); }
+  .header h1 { font-size: 3em; color: #fff; margin-bottom: 10px; }
+  .header p { color: #8b949e; font-size: 1.2em; max-width: 700px; margin: 0 auto; }
+  .nav { display: flex; justify-content: center; gap: 20px; padding: 20px; flex-wrap: wrap; }
+  .nav a { color: #58a6ff; text-decoration: none; padding: 8px 20px; border: 1px solid #30363d; border-radius: 6px; transition: all 0.2s; }
+  .nav a:hover { background: #161b22; border-color: #58a6ff; }
+  .content { max-width: 900px; margin: 0 auto; padding: 20px 30px; }
+  .content h2 { color: #58a6ff; margin: 30px 0 15px; border-bottom: 1px solid #21262d; padding-bottom: 8px; }
+  .content h3 { color: #79c0ff; margin: 20px 0 10px; }
+  .content h4 { color: #d2a8ff; margin: 15px 0 8px; }
+  .content p { margin: 10px 0; color: #c9d1d9; }
+  .content a { color: #58a6ff; text-decoration: none; }
+  .content a:hover { text-decoration: underline; }
+  .content pre { background: #161b22; padding: 16px; border-radius: 8px; overflow-x: auto; margin: 15px 0; border: 1px solid #30363d; }
+  .content code { background: #161b22; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+  .content pre code { background: transparent; padding: 0; }
+  .content strong { color: #f0f6fc; }
+  .content ul, .content ol { padding-left: 25px; margin: 10px 0; }
+  .content li { margin: 5px 0; }
+  .content img { max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
+  .content table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+  .content th, .content td { border: 1px solid #30363d; padding: 8px 12px; text-align: left; }
+  .content th { background: #161b22; color: #58a6ff; }
+  .section { display: none; }
+  .section.active { display: block; }
+  .footer { text-align: center; padding: 40px 20px; color: #484f58; border-top: 1px solid #21262d; margin-top: 40px; }
+  .footer a { color: #58a6ff; }
 </style>
 </head>
 <body>
-
-<div class="hero">
-<h1>FreeBaby</h1>
-<p>Minimal self-evolving autonomous agent framework. ~3K lines of seed code. Grows a skill tree unique to you.</p>
-<div class="badges">
-<span class="badge"><span class="dot"></span> Self-Evolving</span>
-<span class="badge">~3K Lines Core</span>
-<span class="badge">9 Atomic Tools</span>
-<span class="badge">Token Efficient &lt;30K</span>
+<div class="header">
+  <h1>FreeBaby</h1>
+  <p>Token-Efficient Self-Evolving Agent Framework - Transform your AI agent from a script kiddie into a senior engineer</p>
 </div>
+<div class="nav">
+  <a href="#" onclick="showSection('overview')">Overview</a>
+  <a href="#" onclick="showSection('getting-started')">Getting Started</a>
+  <a href="#" onclick="showSection('contributing')">Contributing</a>
+  <a href="https://github.com/weiwei0450/FreeBaby">GitHub</a>
 </div>
-
-<nav>
-<div class="container">
-<a href="#overview">Overview</a>
-<a href="#features">Features</a>
-<a href="#demos">Demos</a>
-<a href="#architecture">Architecture</a>
-<a href="#quickstart">Quick Start</a>
-<a href="#getting-started">Getting Started</a>
-<a href="https://github.com/weiwei0450/FreeBaby" target="_blank">GitHub</a>
+<div class="content">
+  <div id="overview" class="section active">
+    <p><div align="center">
+<img src="assets/images/bar.jpg" width="880"/>
+</div></p><p><p align="center">
+  <a href="#english">English</a> | <a href="#chinese">中文</a> | 📄 Technical Report:&nbsp;<a href="assets/FreeBaby_Technical_Report.pdf"><img src="https://img.shields.io/badge/-PDF-EA4335?logo=adobeacrobatreader&logoColor=white" alt="Technical Report PDF" height="18"/></a> | 📘 <a href="https://wei0994.ccwu.cc">Documentation</a>
+</p></p><p>---
+<a name="english"></a>
+<h2>🌟 Overview</h2></p><p><strong>FreeBaby</strong> is a minimal, self-evolving autonomous agent framework. Its core is just <strong>~3K lines of code</strong>. Through <strong>9 atomic tools + a ~100-line Agent Loop</strong>, it grants any LLM system-level control over a local computer — covering browser, terminal, filesystem, keyboard/mouse input, screen vision, and mobile devices (ADB).</p><p>Its design philosophy: <strong>don't preload skills — evolve them.</strong></p><p>Every time FreeBaby solves a new task, it automatically crystallizes the execution path into an skill for direct reuse later. The longer you use it, the more skills accumulate — forming a skill tree that belongs entirely to you, grown from 3K lines of seed code.</p><p>> <strong>🤖 Self-Bootstrap Proof</strong> — Everything in this repository, from installing Git and running <code>git init</code> to every commit message, was completed autonomously by FreeBaby. The author never opened a terminal once.</p><p><h2>📋 Core Features</h2>
+- <strong>Self-Evolving</strong>: Automatically crystallizes each task into an skill. Capabilities grow with every use, forming your personal skill tree.
+- <strong>Minimal Architecture</strong>: ~3K lines of core code. Agent Loop is ~100 lines. No complex dependencies, zero deployment overhead.
+- <strong>Strong Execution</strong>: Injects into a real browser (preserving login sessions). 9 atomic tools take direct control of the system.
+- <strong>High Compatibility</strong>: Supports Claude / Gemini / Kimi / MiniMax and other major models. Cross-platform.
+- <strong>Token Efficient</strong>: <30K context window — a fraction of the 200K–1M other agents consume. Layered memory ensures the right knowledge is always in scope. Less noise, fewer hallucinations, higher success rate — at a fraction of the cost.</p><p>
+<h2>🧬 Self-Evolution Mechanism</h2></p><p>This is what fundamentally distinguishes FreeBaby from every other agent framework.</p><p><pre><code>[New Task] --> [Autonomous Exploration] (install deps, write scripts, debug & verify) -->
+[Crystallize Execution Path into skill] --> [Write to Memory Layer] --> [Direct Recall on Next Similar Task]
+</code></pre></p><p>| What you say | What the agent does the first time | Every time after |
+|---|---|---|
+| *"Read my WeChat messages"* | Install deps → reverse DB → write read script → save skill | <strong>one-line invoke</strong> |
+| *"Monitor stocks and alert me"* | Install mootdx → build selection flow → configure cron → save skill | <strong>one-line start</strong> |
+| *"Send this file via Gmail"* | Configure OAuth → write send script → save skill | <strong>ready to use</strong> |</p><p>After a few weeks, your agent instance will have a skill tree no one else in the world has — all grown from 3K lines of seed code.</p><p>
+##### 🎯 Demo Showcase</p><p>| 🧋 Food Delivery Order | 📈 Quantitative Stock Screening |
+|:---:|:---:|
+| <img src="assets/demo/order_tea.gif" width="100%" alt="Order Tea"> | <img src="assets/demo/selectstock.gif" width="100%" alt="Stock Selection"> |
+| *"Order me a milk tea"* — Navigates the delivery app, selects items, and completes checkout automatically. | *"Find GEM stocks with EXPMA golden cross, turnover > 5%"* — Screens stocks with quantitative conditions. |
+| 🌐 Autonomous Web Exploration | 💰 Expense Tracking | 💬 Batch Messaging |
+| <img src="assets/demo/autonomous_explore.png" width="100%" alt="Web Exploration"> | <img src="assets/demo/alipay_expense.png" width="100%" alt="Alipay Expense"> | <img src="assets/demo/wechat_batch.png" width="100%" alt="WeChat Batch"> |
+| Autonomously browses and periodically summarizes web content. | *"Find expenses over ¥2K in the last 3 months"* — Drives Alipay via ADB. | Sends bulk WeChat messages, fully driving the WeChat client. |</p><p><h2>📅 Latest News</h2></p><p>- <strong>2026-04-21:</strong> 📄 <a href="https://arxiv.org/abs/2604.17091">Technical Report released on arXiv</a> — *FreeBaby: A Token-Efficient Self-Evolving LLM Agent via Contextual Information Density Maximization*
+- <strong>2026-04-11:</strong> Introduced <strong>L4 session archive memory</strong> and scheduler cron integration
+- <strong>2026-03-23:</strong> Support personal WeChat as a bot frontend
+- <strong>2026-03-10:</strong> <a href="https://mp.weixin.qq.com/s/q2gQ7YvWoiAcwxzaiwpuiQ?scene=1&click_id=7">Released million-scale Skill Library</a>
+- <strong>2026-03-08:</strong> <a href="https://mp.weixin.qq.com/s/eiEhwo-j6S-WpLxgBnNxBg">Released "Dintal Claw" — a FreeBaby-powered government affairs bot</a>
+- <strong>2026-03-01:</strong> <a href="https://mp.weixin.qq.com/s/uVWpTTF5I1yzAENV_qm7yg">FreeBaby featured by Jiqizhixin (机器之心)</a>
+- <strong>2026-01-16:</strong> FreeBaby V1.0 public release</p><p>---</p><p><h2>🚀 Quick Start</h2></p><p><h4>Method 1: Standard Installation</h4></p><p><pre><code># 1. Clone the repo
+git clone https://github.com/weiwei0450/FreeBaby.git
+cd FreeBaby</p><p># 2. Install minimal dependencies
+pip install requests streamlit pywebview</p><p># 3. Configure API Key
+cp mykey_template.py mykey.py
+# Edit mykey.py and fill in your LLM API Key</p><p># 4. Launch
+python launch.pyw
+</code></pre></p><p><h4>Method 2: uv (for experienced Python users)</h4></p><p>If you prefer a modern Python workflow, FreeBaby also provides a minimal <code>pyproject.toml</code>:</p><p><pre><code>git clone https://github.com/weiwei0450/FreeBaby.git
+cd FreeBaby
+uv pip install -e ".[ui]"        # Core + GUI dependencies
+cp mykey_template.py mykey.py
+python launch.pyw
+</code></pre></p><p>> FreeBaby is meant to grow its environment through the Agent itself, not by pre-installing every possible package.</p><p>Full guide: <a href="GETTING_STARTED.md">GETTING_STARTED.md</a></p><p>---</p><p><h2>🤖 Bot Interface (Optional)</h2></p><p><h3>Telegram Bot</h3></p><p><pre><code># mykey.py
+tg_bot_token = 'YOUR_BOT_TOKEN'
+tg_allowed_users = [YOUR_USER_ID]
+</code></pre></p><p><pre><code>python frontends/tgapp.py
+</code></pre></p><p><h3>Alternative App Frontends</h3></p><p>Besides the default Streamlit web UI, you can also try other frontend styles:</p><p><pre><code>python frontends/qtapp.py                # Qt-based desktop app
+streamlit run frontends/stapp2.py        # Alternative Streamlit UI
+</code></pre></p><p><h3>Common Chat Commands</h3></p><p>The default Streamlit desktop UI started by <code>python launch.pyw</code>, plus the QQ / Telegram / Feishu / WeCom / DingTalk frontends, support these chat commands:</p><p>- <code>/new</code> - start a fresh conversation and clear the current context
+- <code>/continue</code> - list recoverable conversation snapshots
+- <code>/continue N</code> - restore the <code>N</code>th recoverable conversation</p><p>
+<h2>📊 Comparison with Similar Tools</h2></p><p>| Feature | FreeBaby | OpenClaw | Claude Code |
+|------|:---:|:---:|:---:|
+| <strong>Codebase</strong> | ~3K lines | ~530,000 lines | Open-sourced (large) |
+| <strong>Deployment</strong> | <code>pip install</code> + API Key | Multi-service orchestration | CLI + subscription |
+| <strong>Browser Control</strong> | Real browser (session preserved) | Sandbox / headless browser | Via MCP plugin |
+| <strong>OS Control</strong> | Mouse/kbd, vision, ADB | Multi-agent delegation | File + terminal |
+| <strong>Self-Evolution</strong> | Autonomous skill growth | Plugin ecosystem | Stateless between sessions |
+| <strong>Out of the Box</strong> | A few core files + starter skills | Hundreds of modules | Rich CLI toolset |</p><p>
+<h2>🧠 How It Works</h2></p><p>FreeBaby accomplishes complex tasks through <strong>Layered Memory × Minimal Toolset × Autonomous Execution Loop</strong>, continuously accumulating experience during execution.</p><p>1️⃣ <strong>Layered Memory System</strong>
+> _Memory crystallizes throughout task execution, letting the agent build stable, efficient working patterns over time._</p><p>- <strong>L0 — Meta Rules</strong>: Core behavioral rules and system constraints of the agent
+- <strong>L1 — Insight Index</strong>: Minimal memory index for fast routing and recall
+- <strong>L2 — Global Facts</strong>: Stable knowledge accumulated over long-term operation
+- <strong>L3 — Task Skills / SOPs</strong>: Reusable workflows for completing specific task types
+- <strong>L4 — Session Archive</strong>: Archived task records distilled from finished sessions for long-horizon recall</p><p>2️⃣ <strong>Autonomous Execution Loop</strong></p><p>> _Perceive environment state → Task reasoning → Execute tools → Write experience to memory → Loop_</p><p>The entire core loop is just <strong>~100 lines of code</strong> (<code>agent_loop.py</code>).</p><p>3️⃣ <strong>Minimal Toolset</strong>
+> _FreeBaby provides only <strong>9 atomic tools</strong>, forming the foundational capabilities for interacting with the outside world._</p><p>| Tool | Function |
+|------|------|
+| <code>code_run</code> | Execute arbitrary code |
+| <code>file_read</code> | Read files |
+| <code>file_write</code> | Write files |
+| <code>file_patch</code> | Patch / modify files |
+| <code>web_scan</code> | Perceive web content |
+| <code>web_execute_js</code> | Control browser behavior |
+| <code>ask_user</code> | Human-in-the-loop confirmation |</p><p>> Additionally, 2 <strong>memory management tools</strong> (<code>update_working_checkpoint</code>, <code>start_long_term_update</code>) allow the agent to persist context and accumulate experience across sessions.</p><p>4️⃣ <strong>Capability Extension Mechanism</strong>
+> _Capable of dynamically creating new tools._</p><p>Via <code>code_run</code>, FreeBaby can dynamically install Python packages, write new scripts, call external APIs, or control hardware at runtime — crystallizing temporary abilities into permanent tools.</p><p><div align="center">
+  <img src="assets/images/workflow.jpg" alt="FreeBaby Workflow" width="400"/>
+  <br><em>FreeBaby Workflow Diagram</em>
+</div></p><p>
+<h2>⭐ Support</h2></p><p>If this project helped you, please consider leaving a <strong>Star!</strong> 🙏</p><p>You're also welcome to join our <strong>FreeBaby Community Group</strong> for discussion, feedback, and co-building 👏</p><p><div align="center">
+  <table>
+    <tr>
+      <td align="center"><strong>WeChat Group 8</strong><br><img src="assets/images/wechat_group8.jpg" alt="WeChat Group 8 QR Code" width="250"/></td>
+      <td align="center"><strong>WeChat Group 9</strong><br><img src="assets/images/wechat_group9.jpg" alt="WeChat Group 9 QR Code" width="250"/></td>
+      <td align="center"><strong>WeChat Group 11</strong><br><img src="assets/images/wechat_group11.jpg" alt="WeChat Group 11 QR Code" width="250"/></td>
+    </tr>
+  </table>
+</div></p><p><h2>🚩 Friendly Links</h2></p><p>Thanks for the support from the LinuxDo community!</p><p><a href="https://img.shields.io/badge/社区-LinuxDo-blue?style=for-the-badge">![LinuxDo</a>](https://linux.do/)</p><p><h2>📄 License</h2></p><p>MIT License — see <a href="LICENSE">LICENSE</a></p><p>*Disclaimer: This project does not build or operate any commercial website. Apart from DintalClaw, no institution, organization, or individual is currently officially authorized to conduct commercial activities under the FreeBaby name.*</p><p>
+---
+<a name="chinese"></a>
+<h2>🌟 项目简介</h2></p><p><strong>FreeBaby</strong> 是一个极简、可自我进化的自主 Agent 框架。核心仅 <strong>~3K 行代码</strong>，通过 <strong>9 个原子工具 + ~100 行 Agent Loop</strong>，赋予任意 LLM 对本地计算机的系统级控制能力，覆盖浏览器、终端、文件系统、键鼠输入、屏幕视觉及移动设备。</p><p>它的设计哲学是：<strong>不预设技能，靠进化获得能力。</strong></p><p>每解决一个新任务，FreeBaby 就将执行路径自动固化为 Skill，供后续直接调用。使用时间越长，沉淀的技能越多，形成一棵完全属于你、从 3K 行种子代码生长出来的专属技能树。</p><p>> <strong>🤖 自举实证</strong> — 本仓库的一切，从安装 Git、<code>git init</code> 到每一条 commit message，均由 FreeBaby 自主完成。作者全程未打开过一次终端。</p><p><h2>📋 核心特性</h2>
+- <strong>自我进化</strong>: 每次任务自动沉淀 Skill，能力随使用持续增长，形成专属技能树
+- <strong>极简架构</strong>: ~3K 行核心代码，Agent Loop 约百行，无复杂依赖，部署零负担
+- <strong>强执行力</strong>: 注入真实浏览器（保留登录态），9 个原子工具直接接管系统
+- <strong>高兼容性</strong>: 支持 Claude / Gemini / Kimi / MiniMax 等主流模型，跨平台运行
+- <strong>极致省 Token</strong>: 上下文窗口不到 30K，是其他 Agent（200K–1M）的零头。分层记忆让关键信息始终在场——噪声更少，幻觉更低，成功率反而更高，而成本低一个数量级。</p><p><h2>🧬 自我进化机制</h2></p><p>这是 FreeBaby 区别于其他 Agent 框架的根本所在。</p><p><pre><code>[遇到新任务]--><a href="安装依赖、编写脚本、调试验证">自主摸索</a>-->
+[将执行路径固化为 Skill]-->[写入记忆层]-->[下次同类任务直接调用]
+</code></pre></p><p>| 你说的一句话 | Agent 第一次做了什么 | 之后每次 |
+|---|---|---|
+| *"监控股票并提醒我"* | 安装 mootdx → 构建选股流程 → 配置定时任务 → 保存 Skill | <strong>一句话启动</strong> |
+| *"用 Gmail 发这个文件"* | 配置 OAuth → 编写发送脚本 → 保存 Skill | <strong>直接可用</strong> |</p><p>用几周后，你的 Agent 实例将拥有一套任何人都没有的专属技能树，全部从 3K 行种子代码中生长而来。</p><p><!-- | *"帮我读取微信消息"* | 安装依赖 → 逆向数据库 → 写读取脚本 → 保存 Skill | <strong>一句话调用</strong> | --></p><p><h4>🎯 实例展示</h4></p><p>| 🧋 外卖下单 | 📈 量化选股 |
+|:---:|:---:|
+| <img src="assets/demo/order_tea.gif" width="100%" alt="Order Tea"> | <img src="assets/demo/selectstock.gif" width="100%" alt="Stock Selection"> |
+| *"Order me a milk tea"* — 自动导航外卖 App，选品并完成结账 | *"Find GEM stocks with EXPMA golden cross, turnover > 5%"* — 量化条件筛股 |
+| 🌐 自主网页探索 | 💰 支出追踪 | 💬 批量消息 |
+| <img src="assets/demo/autonomous_explore.png" width="100%" alt="Web Exploration"> | <img src="assets/demo/alipay_expense.png" width="100%" alt="Alipay Expense"> | <img src="assets/demo/wechat_batch.png" width="100%" alt="WeChat Batch"> |
+| 自主浏览并定时汇总网页信息 | *"查找近 3 个月超 ¥2K 的支出"* — 通过 ADB 驱动支付宝 | 批量发送微信消息，完整驱动微信客户端 |</p><p></p><p><h2>📅 最新动态</h2></p><p>- <strong>2026-04-21:</strong> 📄 <a href="https://arxiv.org/abs/2604.17091">技术报告已发布至 arXiv</a> — *FreeBaby: A Token-Efficient Self-Evolving LLM Agent via Contextual Information Density Maximization*
+- <strong>2026-04-11:</strong> 引入 <strong>L4 会话归档记忆</strong>，并接入 scheduler cron 调度
+- <strong>2026-03-23:</strong> 支持个人微信接入作为 Bot 前端
+- <strong>2026-03-10:</strong> <a href="https://mp.weixin.qq.com/s/q2gQ7YvWoiAcwxzaiwpuiQ?scene=1&click_id=7">发布百万级 Skill 库</a>
+- <strong>2026-03-08:</strong> <a href="https://mp.weixin.qq.com/s/eiEhwo-j6S-WpLxgBnNxBg">发布以 FreeBaby 为核心的"政务龙虾" Dintal Claw</a>
+- <strong>2026-03-01:</strong> <a href="https://mp.weixin.qq.com/s/uVWpTTF5I1yzAENV_qm7yg">FreeBaby 被机器之心报道</a>
+- <strong>2026-01-16:</strong> FreeBaby V1.0 公开版本发布</p><p>---</p><p><h2>🚀 快速开始</h2></p><p><h4>方法一：标准安装</h4></p><p><pre><code># 1. 克隆仓库
+git clone https://github.com/weiwei0450/FreeBaby.git
+cd FreeBaby</p><p># 2. 安装最小依赖
+pip install requests streamlit pywebview</p><p># 3. 配置 API Key
+cp mykey_template.py mykey.py
+# 编辑 mykey.py，填入你的 LLM API Key</p><p># 4. 启动
+python launch.pyw
+</code></pre></p><p><h4>方法二：uv 快速安装（熟悉 Python 的用户）</h4></p><p>如果你习惯现代 Python 工作流，FreeBaby 也提供了一个最小化的 <code>pyproject.toml</code>：</p><p><pre><code>git clone https://github.com/weiwei0450/FreeBaby.git
+cd FreeBaby
+uv pip install -e ".[ui]"        # 核心 + GUI 依赖
+cp mykey_template.py mykey.py
+python launch.pyw
+</code></pre></p><p>> FreeBaby 更推荐由 Agent 在使用中自举环境，而不是预先手动装完整依赖。</p><p>完整引导流程见 <a href="GETTING_STARTED.md">GETTING_STARTED.md</a>。</p><p>📖 新手使用指南（图文版）：<a href="https://my.feishu.cn/wiki/CGrDw0T76iNFuskmwxdcWrpinPb">飞书文档</a></p><p>📘 完整入门教程：<a href="https://wei0994.ccwu.cc">FreeBaby 文档</a></p><p>---</p><p><h2>🤖 Bot 接口（可选）</h2></p><p><h3>微信 Bot（个人微信）</h3></p><p>无需额外配置，扫码登录即可：</p><p><pre><code>pip install pycryptodome qrcode requests
+python frontends/wechatapp.py
+</code></pre></p><p>> 首次启动会弹出二维码，用微信扫码完成绑定。之后通过微信消息与 Agent 交互。</p><p><h3>QQ Bot</h3></p><p>使用 <code>qq-botpy</code> WebSocket 长连接，<strong>无需公网 webhook</strong>：</p><p><pre><code>pip install qq-botpy
+</code></pre></p><p>在 <code>mykey.py</code> 中补充：</p><p><pre><code>qq_app_id = "YOUR_APP_ID"
+qq_app_secret = "YOUR_APP_SECRET"
+qq_allowed_users = ["YOUR_USER_OPENID"]  # 或 ['*'] 公开访问
+</code></pre></p><p><pre><code>python frontends/qqapp.py
+</code></pre></p><p>> 在 <a href="https://q.qq.com">QQ 开放平台</a> 创建机器人获取 AppID / AppSecret。首次消息后，用户 openid 记录于 <code>temp/qqapp.log</code>。</p><p><h3>飞书（Lark）</h3></p><p><pre><code>pip install lark-oapi
+python frontends/fsapp.py
+</code></pre></p><p><pre><code>fs_app_id = "cli_xxx"
+fs_app_secret = "xxx"
+fs_allowed_users = ["ou_xxx"]  # 或 ['*']
+</code></pre></p><p><strong>入站支持</strong>：文本、富文本 post、图片、文件、音频、media、交互卡片 / 分享卡片  
+<strong>出站支持</strong>：流式进度卡片、图片回传、文件 / media 回传  
+<strong>视觉模型</strong>：图片首轮以真正的多模态输入发送给兼容 OpenAI Vision 的后端</p><p>详细配置见 <a href="assets/SETUP_FEISHU.md">assets/SETUP_FEISHU.md</a></p><p>
+<h3>企业微信（WeCom）</h3></p><p><pre><code>pip install wecom_aibot_sdk
+python frontends/wecomapp.py
+</code></pre></p><p><pre><code>wecom_bot_id = "your_bot_id"
+wecom_secret = "your_bot_secret"
+wecom_allowed_users = ["your_user_id"]
+wecom_welcome_message = "你好，我在线上。"
+</code></pre></p><p><h3>钉钉（DingTalk）</h3></p><p><pre><code>pip install dingtalk-stream
+python frontends/dingtalkapp.py
+</code></pre></p><p><pre><code>dingtalk_client_id = "your_app_key"
+dingtalk_client_secret = "your_app_secret"
+dingtalk_allowed_users = ["your_staff_id"]  # 或 ['*']
+</code></pre></p><p><h3>其他 App 前端</h3></p><p>除默认的 Streamlit Web UI 外，还可以尝试不同风格的前端：</p><p><pre><code>python frontends/qtapp.py                # 基于 Qt 的桌面应用
+streamlit run frontends/stapp2.py        # 另一种 Streamlit 风格 UI
+</code></pre></p><p><h3>通用聊天命令</h3></p><p>默认通过 <code>python launch.pyw</code> 启动的 Streamlit 桌面 UI，以及 QQ / Telegram / 飞书 / 企业微信 / 钉钉前端，都支持以下命令：</p><p>- <code>/new</code> - 开启新对话并清空当前上下文
+- <code>/continue</code> - 列出可恢复会话快照
+- <code>/continue N</code> - 恢复第 <code>N</code> 个可恢复会话</p><p>
+<h2>📊 与同类产品对比</h2></p><p>| 特性 | FreeBaby | OpenClaw | Claude Code |
+|------|:---:|:---:|:---:|
+| <strong>代码量</strong> | ~3K 行 | ~530,000 行 | 已开源（体量大） |
+| <strong>部署方式</strong> | <code>pip install</code> + API Key | 多服务编排 | CLI + 订阅 |
+| <strong>浏览器控制</strong> | 注入真实浏览器（保留登录态） | 沙箱 / 无头浏览器 | 通过 MCP 插件 |
+| <strong>OS 控制</strong> | 键鼠、视觉、ADB | 多 Agent 委派 | 文件 + 终端 |
+| <strong>自我进化</strong> | 自主生长 Skill 和工具 | 插件生态 | 会话间无状态 |
+| <strong>出厂配置</strong> | 几个核心文件 + 少量初始 Skills | 数百模块 | 丰富 CLI 工具集 |</p><p>
+<h2>🧠 工作机制</h2></p><p>FreeBaby 通过<strong>分层记忆 × 最小工具集 × 自主执行循环</strong>完成复杂任务，并在执行过程中持续积累经验。</p><p>1️⃣ <strong>分层记忆系统</strong>
+> 记忆在任务执行过程中持续沉淀，使 Agent 逐步形成稳定且高效的工作方式</p><p>
+- <strong>L0 — 元规则（Meta Rules）</strong>：Agent 的基础行为规则和系统约束
+- <strong>L1 — 记忆索引（Insight Index）</strong>：极简索引层，用于快速路由与召回
+- <strong>L2 — 全局事实（Global Facts）</strong>：在长期运行过程中积累的稳定知识
+- <strong>L3 — 任务 Skills / SOPs</strong>：完成特定任务类型的可复用流程
+- <strong>L4 — 会话归档（Session Archive）</strong>：从已完成任务中提炼出的归档记录，用于长程召回</p><p>2️⃣ <strong>自主执行循环</strong></p><p>> 感知环境状态  →  任务推理  →  调用工具执行  →  经验写入记忆  →  循环</p><p>整个核心循环仅 <strong>约百行代码</strong>（<code>agent_loop.py</code>）。</p><p>3️⃣ <strong>最小工具集</strong>
+>FreeBaby 仅提供 <strong>9 个原子工具</strong>，构成与外部世界交互的基础能力</p><p>| 工具 | 功能 |
+|------|------|
+| <code>code_run</code> | 执行任意代码 |
+| <code>file_read</code> | 读取文件 |
+| <code>file_write</code> | 写入文件 |
+| <code>file_patch</code> | 修改文件 |
+| <code>web_scan</code> | 感知网页内容 |
+| <code>web_execute_js</code> | 控制浏览器行为 |
+| <code>ask_user</code> | 人机协作确认 |</p><p>> 此外，还有 2 个<strong>记忆管理工具</strong>（<code>update_working_checkpoint</code>、<code>start_long_term_update</code>），使 Agent 能够跨会话积累经验、维持持久上下文。</p><p>4️⃣ <strong>能力扩展机制</strong>
+> 具备动态创建新的工具能力
+>
+通过 <code>code_run</code>，FreeBaby 可在运行时动态安装 Python 包、编写新脚本、调用外部 API 或控制硬件，将临时能力固化为永久工具。</p><p><div align="center">
+  <img src="assets/images/workflow.jpg" alt="FreeBaby 工作流程" width="400"/>
+  <br><em>FreeBaby 工作流程图</em>
+</div></p><p><h2>⭐ 支持</h2>
+如果这个项目对您有帮助，欢迎点一个 <strong>Star!</strong> 🙏</p><p>同时也欢迎加入我们的<strong>FreeBaby体验交流群</strong>，一起交流、反馈和共建 👏
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><strong>微信群 9</strong><br><img src="assets/images/wechat_group9.jpg" alt="微信群 9 二维码" width="250"/></td>
+      <td align="center"><strong>微信群 11</strong><br><img src="assets/images/wechat_group11.jpg" alt="微信群 11 二维码" width="250"/></td>
+      <td align="center"><strong>微信群 12</strong><br><img src="assets/images/wechat_group12.jpg" alt="微信群 12 二维码" width="250"/></td>
+    </tr>
+  </table>
+</div></p><p><h2>🚩 友情链接</h2></p><p>感谢 <strong>LinuxDo</strong> 社区的支持！</p><p><a href="https://img.shields.io/badge/社区-LinuxDo-blue?style=for-the-badge">![LinuxDo</a>](https://linux.do/)</p><p>
+<h2>📄 许可</h2>
+MIT License — 详见 <a href="LICENSE">LICENSE</a></p><p>*声明：本项目未构建任何商业站点；除 DintalClaw 外，目前未官方授权任何机构、组织或个人以 FreeBaby 名义从事商业活动。*</p><p><h2>📈 Star History</h2></p><p><a href="https://star-history.com/#weiwei0450/FreeBaby&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=weiwei0450/FreeBaby&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=weiwei0450/FreeBaby&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=weiwei0450/FreeBaby&type=Date" />
+ </picture>
+</a>
+</p>
+  </div>
+  <div id="getting-started" class="section">
+    <p># 🚀 新手上手指南</p><p>> 完全没接触过编程也没关系，跟着做就行。Mac / Windows 都适用。
+>
+> 如果你已经有 Python 环境，直接跳到<a href="#2-配置-api-key">第 2 步</a>。</p><p>---</p><p><h2>1. 安装 Python</h2></p><p><h3>Mac</h3></p><p>打开「终端」（启动台搜索 "终端" 或 "Terminal"），粘贴这行命令然后回车：</p><p><pre><code>brew install python
+</code></pre></p><p>如果提示 <code>brew: command not found</code>，说明还没装 Homebrew，先粘贴这行：</p><p><pre><code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+</code></pre></p><p>装完后再执行 <code>brew install python</code>。</p><p><h3>Windows</h3></p><p>1. 打开 <a href="https://www.python.org/downloads/">python.org/downloads</a>，点黄色大按钮下载
+2. 运行安装包，<strong>底部的 "Add Python to PATH" 一定要勾上</strong>
+3. 点 "Install Now"</p><p><h3>验证</h3></p><p>终端 / 命令提示符里输入：</p><p><pre><code>python3 --version
+</code></pre></p><p>看到 <code>Python 3.x.x</code> 就 OK。Windows 上也可以试 <code>python --version</code>。</p><p>> ⚠️ <strong>版本提示</strong>：推荐 <strong>Python 3.11 或 3.12</strong>。不要使用 3.14（与 pywebview 等依赖不兼容）。</p><p>---</p><p><h2>2. 配置 API Key</h2></p><p><h3>下载项目</h3></p><p>1. 打开 <a href="https://github.com/weiwei0450/FreeBaby">GitHub 仓库页面</a>
+2. 点绿色 <strong>Code</strong> 按钮 → <strong>Download ZIP</strong>
+3. 解压到你喜欢的位置</p><p><h3>创建配置文件</h3></p><p>进入项目文件夹，把 <code>mykey_template.py</code> 复制一份，重命名为 <code>mykey.py</code>。</p><p>用任意文本编辑器打开 <code>mykey.py</code>，填入你的 API 信息。<strong>选一种填就行</strong>，不用的配置删掉或留着不管都行。</p><p><h3>配置示例</h3></p><p><strong>最常见的用法：</strong></p><p><pre><code># 变量名含 'oai' → 走 OpenAI 兼容格式 (/chat/completions)
+oai_config = {
+    'apikey': 'sk-你的密钥',
+    'apibase': 'http://你的API地址:端口',
+    'model': '模型名称',
+}
+</code></pre></p><p><pre><code># 变量名含 'claude'（不含 'native'）→ 走 Claude 兼容格式 (/messages)
+claude_config = {
+    'apikey': 'sk-你的密钥',
+    'apibase': 'http://你的API地址:端口',
+    'model': 'claude-sonnet-4-20250514',
+}
+</code></pre></p><p><pre><code># MiniMax 使用 OpenAI 兼容格式，变量名含 'oai' 即可
+# 温度自动修正为 (0, 1]，支持 M2.7 / M2.5 全系列，204K 上下文
+oai_minimax_config = {
+    'apikey': 'eyJh...',
+    'apibase': 'https://api.minimax.io/v1',
+    'model': 'MiniMax-M2.7',
+}
+</code></pre></p><p><strong>使用标准工具调用格式（适合较弱模型）：</strong></p><p><pre><code># 变量名同时含 'native' 和 'claude' → Claude 标准工具调用格式
+native_claude_config = {
+    'apikey': 'sk-ant-你的密钥',
+    'apibase': 'https://api.anthropic.com',
+    'model': 'claude-sonnet-4-20250514',
+}
+</code></pre></p><p>> 💡 还支持 <code>native_oai_config</code>（OpenAI 标准工具调用）、<code>sider_cookie</code>（Sider）等，详见 <code>mykey_template.py</code> 中的注释。</p><p><h3>关键规则</h3></p><p><strong>变量命名决定接口格式</strong>（不是模型名决定的）：</p><p>| 变量名包含 | 触发的 Session | 适用场景 |
+|-----------|---------------|---------|
+| <code>oai</code> | OpenAI 兼容 | 大多数 API 服务、OpenAI 官方 |
+| <code>claude</code>（不含 <code>native</code>） | Claude 兼容 | Claude API 服务 |
+| <code>native</code> + <code>claude</code> | Claude 标准工具调用 | 较弱模型推荐，工具调用更规范 |
+| <code>native</code> + <code>oai</code> | OpenAI 标准工具调用 | 较弱模型推荐，工具调用更规范 |</p><p>> 例：用 Claude 模型，但 API 服务提供的是 OpenAI 兼容接口 → 变量名用 <code>oai_xxx</code>。
+> 例：用 MiniMax 模型 → 变量名用 <code>oai_minimax_config</code>，MiniMax 走 OpenAI 兼容接口。</p><p><strong><code>apibase</code> 填写规则</strong>（会自动拼接端点路径）：</p><p>| 你填的内容 | 系统行为 |
+|-----------|---------|
+| <code>http://host:2001</code> | 自动补 <code>/v1/chat/completions</code> |
+| <code>http://host:2001/v1</code> | 自动补 <code>/chat/completions</code> |
+| <code>http://host:2001/v1/chat/completions</code> | 直接使用，不拼接 |</p><p>---</p><p><h2>3. 初次启动</h2></p><p>终端里进入项目文件夹，运行：</p><p><pre><code>cd 你的解压路径
+python3 agentmain.py
+</code></pre></p><p>这就是<strong>命令行模式</strong>，已经可以用了。你会看到一个输入提示符，直接打字发送任务即可。</p><p>试试你的第一个任务：</p><p><pre><code>帮我在桌面创建一个 hello.txt，内容是 Hello World
+</code></pre></p><p>> 💡 Windows 上如果 <code>python3</code> 不识别，换成 <code>python agentmain.py</code>。</p><p>---</p><p><h2>4. 让 Agent 自己装依赖</h2></p><p>Agent 启动后，只需要一句话，它就会自己搞定所有依赖：</p><p><pre><code>请查看你的代码，安装所有用得上的 python 依赖
+</code></pre></p><p>Agent 会自己读代码、找出需要的包、全部装好。</p><p>> ⚠️ 如果遇到网络问题导致 Agent 无法调用 API，可能需要先手动装一个包：
+> <pre><code>> pip install requests
+> </code></pre></p><p><h3>升级到图形界面</h3></p><p>依赖装完后，就可以用 GUI 模式了：</p><p><pre><code>python3 launch.pyw
+</code></pre></p><p>启动后会出现一个桌面悬浮窗，直接在里面输入任务指令。</p><p><h3>可选：让 Agent 帮你做的事</h3></p><p><pre><code>请帮我建立 git 连接，方便以后更新代码
+</code></pre></p><p>Agent 会自动配好。如果你电脑上没有 Git，它也会帮你下载 portable 版。</p><p><pre><code>请帮我在桌面创建一个 launch.pyw 的快捷方式
+</code></pre></p><p>这样以后双击桌面图标就能启动，不用再开终端了。</p><p>---</p><p><h2>5. 能力解锁</h2></p><p>环境跑起来之后，你可以逐步解锁更多能力。每一项都只需要<strong>对 Agent 说一句话</strong>：</p><p><h3>基础能力</h3></p><p>| 能力 | 对 Agent 说 | 说明 |
+|------|-----------|------|
+| <strong>PowerShell 脚本执行</strong> | <code>帮我解锁当前用户的 PowerShell ps1 执行权限</code> | Windows 默认禁止运行 .ps1 脚本 |
+| <strong>全局文件搜索</strong> | <code>安装并配置 Everything 命令行工具进 PATH</code> | 毫秒级全盘文件搜索 |</p><p><h3>浏览器自动化</h3></p><p>| 能力 | 对 Agent 说 | 说明 |
+|------|-----------|------|
+| <strong>Web 工具解锁</strong> | <code>执行 web setup sop，解锁 web 工具</code> | 注入浏览器插件，使 Agent 能直接操控网页 |</p><p>解锁后，Agent 可以在<strong>保留你登录态</strong>的真实浏览器中操作：</p><p><pre><code>打开淘宝，搜索 iPhone 16，按价格排序
+去 B 站，查看我最近看过的历史视频
+</code></pre></p><p><h3>进阶能力</h3></p><p>| 能力 | 对 Agent 说 | 说明 |
+|------|-----------|------|
+| <strong>OCR</strong> | <code>用rapidocr配置你的ocr能力并存入记忆</code> | 让 Agent 能"看到"屏幕文字 |
+| <strong>屏幕视觉</strong> | <code>仿造你的llmcore，写个调用vision的能力并存入记忆</code> | 让 Agent 能"看到"屏幕内容 |
+| <strong>移动端控制</strong> | <code>配置 ADB 环境，准备连接安卓设备</code> | 通过 USB/WiFi 控制 Android 手机 |</p><p><h3>聊天平台接入（可选）</h3></p><p>接入后可以随时随地通过手机给电脑上的 Agent 发指令。</p><p>对 Agent 说：<code>看你的代码，帮我配置 XX 平台的机器人接入</code></p><p>支持的平台：<strong>微信个人Bot</strong> / QQ / 飞书 / 企业微信 / 钉钉 / Telegram</p><p>> Agent 会自动读取代码、引导你完成配置。</p><p><h3>高级模式</h3></p><p>以下模式全部<strong>自文档化</strong>——不用查手册，直接问 Agent 即可：</p><p>| 模式 | 对 Agent 说 |
+|------|------------|
+| <strong>Reflect（反射）</strong> | <code>查看你的代码，告诉我你的 reflect 模式怎么启用</code> |
+| <strong>计划任务</strong> | <code>查看你的代码，告诉我你的计划任务模式怎么启用</code> |
+| <strong>Plan（规划）</strong> | <code>查看你的代码，告诉我你的 plan 模式怎么启用</code> |
+| <strong>SubAgent（子代理）</strong> | <code>查看你的代码，告诉我你的 subagent 模式怎么启用</code> |
+| <strong>自主探索</strong> | <code>查看你的代码，告诉我你的自主探索模式怎么启用</code> |</p><p>> 💡 这就是 FreeBaby 的核心设计理念：<strong>代码即文档</strong>。Agent 能读懂自己的源码，所以任何功能你都可以直接问它。</p><p>---</p><p><h2>💡 使用越久越强</h2></p><p>FreeBaby 不预设技能，而是<strong>靠使用进化</strong>。每完成一个新任务，它会自动将执行路径固化为 Skill，下次遇到类似任务直接调用。</p><p>你不需要管理这些 Skill，Agent 会自动处理。使用时间越长，积累的技能越多，最终形成一棵完全属于你的专属技能树。</p><p>> 💡 如果你觉得某些重要信息 Agent 没有记住，可以直接告诉它：<code>把这个记到你的记忆里</code>，它会主动记忆。</p><p><strong>其他 Claw 的 Skill 也可以直接复用：</strong></p><p>- 让 Agent 搜索：<code>帮我找个做 XXX 的 skill</code> → 完成后 → <code>加入你的记忆中</code>
+- 直接指定来源：<code>访问 XXX 文件夹/URL，按照这个 skill 做 XXX</code></p><p><strong>保持更新：</strong></p><p>对 Agent 说：<code>git 更新你的代码，然后看看 commit 有什么新功能</code></p><p>> Agent 会自动 pull 最新代码并解读 commit log，告诉你新增了什么能力。</p><p>> 更多细节请参阅 <a href="README.md">README.md</a> 或 <a href="https://my.feishu.cn/wiki/CGrDw0T76iNFuskmwxdcWrpinPb">详细版图文教程</a>。</p>
+  </div>
+  <div id="contributing" class="section">
+    <p># Contributing to FreeBaby</p><p><h2>Why This File Is Short</h2></p><p>FreeBaby's core is ~3K lines. Every file in this repo will be read by AI agents — potentially thousands of times. Extra words cost real tokens and push useful context out of the window, increasing hallucinations. This document practices what it preaches: <strong>say only what matters.</strong></p><p><h2>Before You Contribute</h2></p><p>1. <strong>Read the codebase first.</strong> It's small enough to read in one sitting. Understand the philosophy before proposing changes.
+2. <strong>Open an Issue first</strong> for anything non-trivial. Discuss before coding.</p><p><h2>Code Standards</h2></p><p>All PRs go through a strict automated code review skill. Key expectations:</p><p>- <strong>Self-documenting code, minimal comments.</strong> If code needs a paragraph to explain, rewrite it.
+- <strong>Compact and visually uniform.</strong> Fewer lines, consistent line lengths, no fluff.
+- <strong>Small change radius.</strong> Changing A shouldn't ripple through B, C, D.
+- <strong>More features → less code.</strong> Good abstractions make the codebase shrink, not grow.
+- <strong>Let it crash by failure radius.</strong> Critical errors fail loud; trivial ones pass silently. No blanket try-catch.</p><p>> ⚠️ This review is deliberately strict — most AI-generated code (e.g. Claude Code output) will not pass as-is. Read the full principles before submitting.</p><p><h2>Skill Contributions</h2></p><p>FreeBaby evolves through skills. Not all skills belong in the core repo:</p><p>| Type | Where it goes | Example |
+|---|---|---|
+| <strong>Fundamental / universal</strong> | Core repo (<code>memory/</code>) | File search, clipboard, basic web ops |
+| <strong>Domain-specific / niche</strong> | Skill Marketplace *(coming soon)* | Stock screening, food delivery, specific API integrations |</p><p>If your skill only makes sense for a specific workflow, it's a marketplace candidate, not a core PR.</p><p><h2>PR Checklist</h2></p><p>- [ ] Issue linked or context explained in ≤3 sentences
+- [ ] Code passes the [review principles] self-check:
+  1. Can I safely modify this locally without reading the whole codebase?
+  2. Is there a clear core abstraction — new features add implementations, not modify old logic?
+  3. Are change points converging at boundaries, not scattered everywhere?
+  4. On failure, can I quickly locate the responsible module?
+- [ ] Net line count: ideally negative or zero for refactors
+- [ ] No unnecessary dependencies added
+</p>
+  </div>
 </div>
-</nav>
-
-<div class="container">
-
-<section id="overview">
-<h2>Overview</h2>
-<p><strong>FreeBaby</strong> is a minimal, self-evolving autonomous agent framework. Its core is just <strong>~3K lines of code</strong>. Through <strong>9 atomic tools + a ~100-line Agent Loop</strong>, it grants any LLM system-level control over a local computer &mdash; covering browser, terminal, filesystem, keyboard/mouse input, screen vision, and mobile devices (ADB).</p>
-<p>Its design philosophy: <strong>don&rsquo;t preload skills &mdash; evolve them.</strong></p>
-<p>Every time FreeBaby solves a new task, it automatically crystallizes the execution path into a skill for direct reuse later. The longer you use it, the more skills accumulate &mdash; forming a skill tree that belongs entirely to you.</p>
-
-<div class="stats">
-<div class="stat"><div class="num">~3K</div><div class="label">Lines of Core Code</div></div>
-<div class="stat"><div class="num">9</div><div class="label">Atomic Tools</div></div>
-<div class="stat"><div class="num">&lt;30K</div><div class="label">Token Context</div></div>
-<div class="stat"><div class="num">100</div><div class="label">Lines Agent Loop</div></div>
+<div class="footer">
+  <p>FreeBaby &middot; <a href="https://github.com/weiwei0450/FreeBaby">GitHub</a></p>
 </div>
-</section>
-
-<section id="features">
-<h2>Core Features</h2>
-<div class="features">
-<div class="feature"><h4>Self-Evolving</h4><p>Automatically crystallizes each task into a reusable skill. Capabilities grow with every use, forming your personal skill tree.</p></div>
-<div class="feature"><h4>Minimal Architecture</h4><p>~3K lines of core code. Agent Loop is ~100 lines. No complex dependencies, zero deployment overhead.</p></div>
-<div class="feature"><h4>Strong Execution</h4><p>Injects into a real browser (preserving login sessions). 9 atomic tools take direct control of the system.</p></div>
-<div class="feature"><h4>High Compatibility</h4><p>Supports Claude / Gemini / Kimi / MiniMax and other major models. Cross-platform (Mac/Windows/Linux).</p></div>
-<div class="feature"><h4>Token Efficient</h4><p>&lt;30K context window &mdash; a fraction of the 200K&ndash;1M other agents consume. Less noise, fewer hallucinations, higher success rate.</p></div>
-<div class="feature"><h4>Layered Memory</h4><p>L0&ndash;L4 memory architecture: Meta-SOP &rarr; Facts &rarr; SOPs &rarr; Sessions &rarr; Raw Sessions. Right knowledge always in scope.</p></div>
-</div>
-</section>
-
-<section id="demos">
-<h2>Demo Showcase</h2>
-<div class="demo-grid">
-<div class="demo"><div class="info"><h4>Bubble Tea Delivery</h4><p>"Order me a milk tea" &mdash; Navigates the delivery app, selects items, and completes checkout automatically.</p></div></div>
-<div class="demo"><div class="info"><h4>Quantitative Stock Screening</h4><p>"Find GEM stocks with EXPMA golden cross, turnover > 5%" &mdash; Screens stocks with quantitative conditions.</p></div></div>
-<div class="demo"><div class="info"><h4>Autonomous Web Exploration</h4><p>Autonomously browses and periodically summarizes web content without human intervention.</p></div></div>
-<div class="demo"><div class="info"><h4>Expense Tracking</h4><p>"Find expenses over ¥2K in the last 3 months" &mdash; Drives Alipay via ADB to extract and analyze data.</p></div></div>
-<div class="demo"><div class="info"><h4>Batch WeChat Messaging</h4><p>Sends bulk WeChat messages, fully driving the WeChat client through UI automation.</p></div></div>
-<div class="demo"><div class="info"><h4>Self-Bootstrap</h4><p>Everything in this repo &mdash; from installing Git to every commit &mdash; was done autonomously by FreeBaby.</p></div></div>
-</div>
-</section>
-
-<section id="architecture">
-<h2>Self-Evolution Mechanism</h2>
-<p>This is what fundamentally distinguishes FreeBaby from every other agent framework.</p>
-<div class="code-block"><code><span class="comment"># Evolution Cycle</span>
-<span class="cmd">[New Task]</span> --> <span class="cmd">[Autonomous Exploration]</span> (install deps, write scripts, debug)
-       --> <span class="cmd">[Crystallize into Skill]</span> --> <span class="cmd">[Write to Memory]</span> --> <span class="cmd">[Direct Recall Next Time]</span></code></div>
-
-<table>
-<tr><th>What you say</th><th>First time</th><th>Every time after</th></tr>
-<tr><td>"Read my WeChat messages"</td><td>Install deps, reverse DB, write script</td><td><strong>One-line invoke</strong></td></tr>
-<tr><td>"Monitor stocks and alert me"</td><td>Install mootdx, build flow, configure cron</td><td><strong>One-line start</strong></td></tr>
-<tr><td>"Send this file via Gmail"</td><td>Configure OAuth, write send script</td><td><strong>Ready to use</strong></td></tr>
-</table>
-
-<h3>9 Atomic Tools</h3>
-<table>
-<tr><th>#</th><th>Tool</th><th>Description</th></tr>
-<tr><td>1</td><td>code_run</td><td>Execute Python / PowerShell scripts</td></tr>
-<tr><td>2</td><td>file_read</td><td>Read files with keyword search</td></tr>
-<tr><td>3</td><td>file_write</td><td>Create or overwrite files</td></tr>
-<tr><td>4</td><td>web_scan</td><td>Scan browser pages (Chrome/Edge)</td></tr>
-<tr><td>5</td><td>web_execute_js</td><td>Inject JS into browser pages</td></tr>
-<tr><td>6</td><td>ask_user</td><td>Interrupt to ask user for input</td></tr>
-<tr><td>7</td><td>search_memory</td><td>Search long-term memory layers</td></tr>
-<tr><td>8</td><td>start_long_term_update</td><td>Save facts to memory</td></tr>
-<tr><td>9</td><td>update_working_checkpoint</td><td>Save working notes between turns</td></tr>
-</table>
-
-<h3>Memory Architecture (L0&ndash;L4)</h3>
-<table>
-<tr><th>Layer</th><th>Name</th><th>Content</th><th>Token Budget</th></tr>
-<tr><td>L0</td><td>Meta-SOP</td><td>How to manage memory itself</td><td>~500</td></tr>
-<tr><td>L1</td><td>Insight</td><td>One-line summaries (auto-synced)</td><td>~300</td></tr>
-<tr><td>L2</td><td>Facts</td><td>Environment config, user prefs, lessons</td><td>~2K</td></tr>
-<tr><td>L3</td><td>SOPs</td><td>Executable procedures (files)</td><td>~5K</td></tr>
-<tr><td>L4</td><td>Sessions</td><td>Raw conversation archives</td><td>On-demand</td></tr>
-</table>
-</section>
-
-<section id="quickstart">
-<h2>Quick Start</h2>
-<div class="install-steps">
-<div class="step"><div class="content"><h4>Clone the repo</h4><div class="code-block"><code><span class="cmd">git clone</span> https://github.com/weiwei0450/FreeBaby.git
-<span class="cmd">cd</span> FreeBaby</code></div></div></div>
-<div class="step"><div class="content"><h4>Install dependencies</h4><div class="code-block"><code><span class="cmd">pip install</span> requests streamlit pywebview</code></div></div></div>
-<div class="step"><div class="content"><h4>Configure API Key</h4><div class="code-block"><code><span class="cmd">cp</span> mykey_template.py mykey.py
-<span class="comment"># Edit mykey.py and fill in your LLM API Key</span></code></div></div></div>
-<div class="step"><div class="content"><h4>Launch</h4><div class="code-block"><code><span class="cmd">python</span> launch.pyw</code></div></div></div>
-</div>
-
-<h3>Alternative: uv (for experienced Python users)</h3>
-<div class="code-block"><code><span class="cmd">git clone</span> https://github.com/weiwei0450/FreeBaby.git
-<span class="cmd">cd</span> FreeBaby
-<span class="cmd">uv pip install</span> -e ".[ui]"
-<span class="cmd">cp</span> mykey_template.py mykey.py
-<span class="cmd">python</span> launch.pyw</code></div>
-</section>
-
-<section id="getting-started">
-<h2>Getting Started (Beginner Friendly)</h2>
-<h3>1. Install Python</h3>
-<p><strong>Mac:</strong> Open Terminal and run <code>brew install python</code> (or install Homebrew first if needed).</p>
-<p><strong>Windows:</strong> Download from <a href="https://www.python.org/downloads/">python.org</a>. <strong>Check "Add Python to PATH"</strong> during install.</p>
-
-<h3>2. Configure API Key</h3>
-<p>Edit <code>mykey.py</code> and fill in your LLM API key. Supports:</p>
-<ul>
-<li><strong>Claude</strong> (Anthropic) &mdash; Recommended</li>
-<li><strong>Gemini</strong> (Google) &mdash; Free tier available</li>
-<li><strong>Kimi</strong> (Moonshot) &mdash; Chinese-friendly</li>
-<li><strong>MiniMax</strong> &mdash; Free tier available</li>
-<li><strong>DeepSeek</strong> &mdash; Cost-effective</li>
-<li>And more OpenAI-compatible endpoints</li>
-</ul>
-
-<h3>3. Launch</h3>
-<div class="code-block"><code><span class="cmd">python</span> launch.pyw</code></div>
-<p>This opens the desktop GUI (pywebview). You can also use:</p>
-<ul>
-<li><code>python ga.py</code> &mdash; Terminal mode</li>
-<li><code>streamlit run frontends/stapp2.py</code> &mdash; Web UI</li>
-</ul>
-
-<h3>4. Start Using</h3>
-<p>Just type natural language commands in the chat:</p>
-<ul>
-<li>"Open Chrome and search for the latest AI news"</li>
-<li>"Create a Python script that monitors Bitcoin price"</li>
-<li>"Read my WeChat message database and summarize"</li>
-<li>"Find all PDF files on my desktop and list them"</li>
-</ul>
-</section>
-
-<section id="contributing">
-<h2>Contributing</h2>
-<p>FreeBaby welcomes contributions! Here&rsquo;s how to get involved:</p>
-<ul>
-<li><strong>Bug Reports:</strong> Open an issue with reproduction steps</li>
-<li><strong>Feature Requests:</strong> Describe your use case in an issue</li>
-<li><strong>Code:</strong> Fork, branch, commit, PR. Keep changes focused.</li>
-<li><strong>Skills:</strong> Share your evolved skills with the community</li>
-</ul>
-<p>See <a href="https://github.com/weiwei0450/FreeBaby/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> for details.</p>
-</section>
-
-</div>
-
-<footer>
-<p>FreeBaby &copy; 2026 &mdash; Built with ~3K lines of seed code that grows with you</p>
-<p><a href="https://github.com/weiwei0450/FreeBaby">GitHub</a> &middot; <a href="https://github.com/weiwei0450/FreeBaby/blob/main/GETTING_STARTED.md">Full Guide</a></p>
-</footer>
-
+<script>
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 200);
+}
+</script>
 </body>
 </html>
