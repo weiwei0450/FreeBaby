@@ -48,7 +48,7 @@ python3 --version
 
 ### 下载项目
 
-1. 打开 [GitHub 仓库页面](https://github.com/lsdefine/FreeBaby)
+1. 打开 [GitHub 仓库页面](https://github.com/weiwei0450/FreeBaby)
 2. 点绿色 **Code** 按钮 → **Download ZIP**
 3. 解压到你喜欢的位置
 

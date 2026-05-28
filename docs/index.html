@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreeBaby - 自进化AI Agent框架</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--card:#141414;--border:#262626;--text:#e8e8e8;--muted:#888;--accent:#4f9cf7;--accent2:#7c3aed;--green:#10b981}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+
+.hero{text-align:center;padding:80px 20px 60px;background:linear-gradient(135deg,#0a0a0a 0%,#1a1a2e 50%,#0a0a0a 100%);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 50%,rgba(79,156,247,0.08) 0%,transparent 50%),radial-gradient(circle at 70% 50%,rgba(124,58,237,0.08) 0%,transparent 50%);animation:pulse 8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:0.5}50%{opacity:1}}
+.hero h1{font-size:3.5rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:16px;position:relative}
+.hero p{font-size:1.2rem;color:var(--muted);max-width:600px;margin:0 auto 30px;position:relative}
+.badges{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;background:var(--card);border:1px solid var(--border);font-size:0.85rem;color:var(--text)}
+.badge .dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+.container{max-width:900px;margin:0 auto;padding:0 20px}
+nav{position:sticky;top:0;z-index:100;background:rgba(10,10,10,0.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:12px 0}
+nav .container{display:flex;gap:24px;align-items:center;overflow-x:auto}
+nav a{color:var(--muted);font-size:0.9rem;white-space:nowrap;transition:color 0.2s}nav a:hover{color:var(--accent);text-decoration:none}
+
+section{padding:60px 0;border-bottom:1px solid var(--border)}
+section:last-child{border-bottom:none}
+h2{font-size:2rem;margin-bottom:24px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h3{font-size:1.3rem;margin:24px 0 12px;color:var(--text)}
+p,li{color:var(--muted);margin-bottom:12px}
+ul{padding-left:20px}
+li{margin-bottom:8px}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin:30px 0}
+.stat{text-align:center;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px}
+.stat .num{font-size:2.5rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat .label{color:var(--muted);font-size:0.85rem;margin-top:4px}
+
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:24px 0}
+.feature{padding:24px;background:var(--card);border:1px solid var(--border);border-radius:12px;transition:border-color 0.3s}
+.feature:hover{border-color:var(--accent)}
+.feature h4{font-size:1.1rem;margin-bottom:8px;color:var(--text)}
+.feature p{font-size:0.9rem;margin:0}
+
+.demo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:24px 0}
+.demo{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:transform 0.3s}
+.demo:hover{transform:translateY(-4px)}
+.demo img{width:100%;height:200px;object-fit:cover}
+.demo .info{padding:16px}
+.demo .info h4{margin-bottom:6px}
+.demo .info p{font-size:0.85rem;margin:0}
+
+.code-block{background:#1a1a2e;border:1px solid var(--border);border-radius:8px;padding:20px;margin:16px 0;overflow-x:auto}
+.code-block code{font-family:"Fira Code",monospace;font-size:0.9rem;color:#a5f3fc;line-height:1.6}
+.code-block .comment{color:#6b7280}
+.code-block .cmd{color:var(--green)}
+
+table{width:100%;border-collapse:collapse;margin:16px 0}
+th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--border)}
+th{color:var(--accent);font-weight:600;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em}
+td{color:var(--muted);font-size:0.9rem}
+
+.install-steps{counter-reset:step}
+.install-steps .step{display:flex;gap:16px;margin:20px 0;padding:20px;background:var(--card);border:1px solid var(--border);border-radius:12px}
+.install-steps .step::before{counter-increment:step;content:counter(step);display:flex;align-items:center;justify-content:center;min-width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:50%;font-weight:700;font-size:1.1rem;color:#fff}
+.install-steps .step .content h4{margin-bottom:8px;color:var(--text)}
+.install-steps .step .content p{margin:0;font-size:0.9rem}
+
+footer{text-align:center;padding:40px 20px;color:var(--muted);font-size:0.85rem;border-top:1px solid var(--border)}
+footer a{color:var(--accent)}
+
+@media(max-width:768px){.hero h1{font-size:2.2rem}.hero p{font-size:1rem}.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+<h1>FreeBaby</h1>
+<p>Minimal self-evolving autonomous agent framework. ~3K lines of seed code. Grows a skill tree unique to you.</p>
+<div class="badges">
+<span class="badge"><span class="dot"></span> Self-Evolving</span>
+<span class="badge">~3K Lines Core</span>
+<span class="badge">9 Atomic Tools</span>
+<span class="badge">Token Efficient &lt;30K</span>
+</div>
+</div>
+
+<nav>
+<div class="container">
+<a href="#overview">Overview</a>
+<a href="#features">Features</a>
+<a href="#demos">Demos</a>
+<a href="#architecture">Architecture</a>
+<a href="#quickstart">Quick Start</a>
+<a href="#getting-started">Getting Started</a>
+<a href="https://github.com/weiwei0450/FreeBaby" target="_blank">GitHub</a>
+</div>
+</nav>
+
+<div class="container">
+
+<section id="overview">
+<h2>Overview</h2>
+<p><strong>FreeBaby</strong> is a minimal, self-evolving autonomous agent framework. Its core is just <strong>~3K lines of code</strong>. Through <strong>9 atomic tools + a ~100-line Agent Loop</strong>, it grants any LLM system-level control over a local computer &mdash; covering browser, terminal, filesystem, keyboard/mouse input, screen vision, and mobile devices (ADB).</p>
+<p>Its design philosophy: <strong>don&rsquo;t preload skills &mdash; evolve them.</strong></p>
+<p>Every time FreeBaby solves a new task, it automatically crystallizes the execution path into a skill for direct reuse later. The longer you use it, the more skills accumulate &mdash; forming a skill tree that belongs entirely to you.</p>
+
+<div class="stats">
+<div class="stat"><div class="num">~3K</div><div class="label">Lines of Core Code</div></div>
+<div class="stat"><div class="num">9</div><div class="label">Atomic Tools</div></div>
+<div class="stat"><div class="num">&lt;30K</div><div class="label">Token Context</div></div>
+<div class="stat"><div class="num">100</div><div class="label">Lines Agent Loop</div></div>
+</div>
+</section>
+
+<section id="features">
+<h2>Core Features</h2>
+<div class="features">
+<div class="feature"><h4>Self-Evolving</h4><p>Automatically crystallizes each task into a reusable skill. Capabilities grow with every use, forming your personal skill tree.</p></div>
+<div class="feature"><h4>Minimal Architecture</h4><p>~3K lines of core code. Agent Loop is ~100 lines. No complex dependencies, zero deployment overhead.</p></div>
+<div class="feature"><h4>Strong Execution</h4><p>Injects into a real browser (preserving login sessions). 9 atomic tools take direct control of the system.</p></div>
+<div class="feature"><h4>High Compatibility</h4><p>Supports Claude / Gemini / Kimi / MiniMax and other major models. Cross-platform (Mac/Windows/Linux).</p></div>
+<div class="feature"><h4>Token Efficient</h4><p>&lt;30K context window &mdash; a fraction of the 200K&ndash;1M other agents consume. Less noise, fewer hallucinations, higher success rate.</p></div>
+<div class="feature"><h4>Layered Memory</h4><p>L0&ndash;L4 memory architecture: Meta-SOP &rarr; Facts &rarr; SOPs &rarr; Sessions &rarr; Raw Sessions. Right knowledge always in scope.</p></div>
+</div>
+</section>
+
+<section id="demos">
+<h2>Demo Showcase</h2>
+<div class="demo-grid">
+<div class="demo"><div class="info"><h4>Bubble Tea Delivery</h4><p>"Order me a milk tea" &mdash; Navigates the delivery app, selects items, and completes checkout automatically.</p></div></div>
+<div class="demo"><div class="info"><h4>Quantitative Stock Screening</h4><p>"Find GEM stocks with EXPMA golden cross, turnover > 5%" &mdash; Screens stocks with quantitative conditions.</p></div></div>
+<div class="demo"><div class="info"><h4>Autonomous Web Exploration</h4><p>Autonomously browses and periodically summarizes web content without human intervention.</p></div></div>
+<div class="demo"><div class="info"><h4>Expense Tracking</h4><p>"Find expenses over ¥2K in the last 3 months" &mdash; Drives Alipay via ADB to extract and analyze data.</p></div></div>
+<div class="demo"><div class="info"><h4>Batch WeChat Messaging</h4><p>Sends bulk WeChat messages, fully driving the WeChat client through UI automation.</p></div></div>
+<div class="demo"><div class="info"><h4>Self-Bootstrap</h4><p>Everything in this repo &mdash; from installing Git to every commit &mdash; was done autonomously by FreeBaby.</p></div></div>
+</div>
+</section>
+
+<section id="architecture">
+<h2>Self-Evolution Mechanism</h2>
+<p>This is what fundamentally distinguishes FreeBaby from every other agent framework.</p>
+<div class="code-block"><code><span class="comment"># Evolution Cycle</span>
+<span class="cmd">[New Task]</span> --> <span class="cmd">[Autonomous Exploration]</span> (install deps, write scripts, debug)
+       --> <span class="cmd">[Crystallize into Skill]</span> --> <span class="cmd">[Write to Memory]</span> --> <span class="cmd">[Direct Recall Next Time]</span></code></div>
+
+<table>
+<tr><th>What you say</th><th>First time</th><th>Every time after</th></tr>
+<tr><td>"Read my WeChat messages"</td><td>Install deps, reverse DB, write script</td><td><strong>One-line invoke</strong></td></tr>
+<tr><td>"Monitor stocks and alert me"</td><td>Install mootdx, build flow, configure cron</td><td><strong>One-line start</strong></td></tr>
+<tr><td>"Send this file via Gmail"</td><td>Configure OAuth, write send script</td><td><strong>Ready to use</strong></td></tr>
+</table>
+
+<h3>9 Atomic Tools</h3>
+<table>
+<tr><th>#</th><th>Tool</th><th>Description</th></tr>
+<tr><td>1</td><td>code_run</td><td>Execute Python / PowerShell scripts</td></tr>
+<tr><td>2</td><td>file_read</td><td>Read files with keyword search</td></tr>
+<tr><td>3</td><td>file_write</td><td>Create or overwrite files</td></tr>
+<tr><td>4</td><td>web_scan</td><td>Scan browser pages (Chrome/Edge)</td></tr>
+<tr><td>5</td><td>web_execute_js</td><td>Inject JS into browser pages</td></tr>
+<tr><td>6</td><td>ask_user</td><td>Interrupt to ask user for input</td></tr>
+<tr><td>7</td><td>search_memory</td><td>Search long-term memory layers</td></tr>
+<tr><td>8</td><td>start_long_term_update</td><td>Save facts to memory</td></tr>
+<tr><td>9</td><td>update_working_checkpoint</td><td>Save working notes between turns</td></tr>
+</table>
+
+<h3>Memory Architecture (L0&ndash;L4)</h3>
+<table>
+<tr><th>Layer</th><th>Name</th><th>Content</th><th>Token Budget</th></tr>
+<tr><td>L0</td><td>Meta-SOP</td><td>How to manage memory itself</td><td>~500</td></tr>
+<tr><td>L1</td><td>Insight</td><td>One-line summaries (auto-synced)</td><td>~300</td></tr>
+<tr><td>L2</td><td>Facts</td><td>Environment config, user prefs, lessons</td><td>~2K</td></tr>
+<tr><td>L3</td><td>SOPs</td><td>Executable procedures (files)</td><td>~5K</td></tr>
+<tr><td>L4</td><td>Sessions</td><td>Raw conversation archives</td><td>On-demand</td></tr>
+</table>
+</section>
+
+<section id="quickstart">
+<h2>Quick Start</h2>
+<div class="install-steps">
+<div class="step"><div class="content"><h4>Clone the repo</h4><div class="code-block"><code><span class="cmd">git clone</span> https://github.com/weiwei0450/FreeBaby.git
+<span class="cmd">cd</span> FreeBaby</code></div></div></div>
+<div class="step"><div class="content"><h4>Install dependencies</h4><div class="code-block"><code><span class="cmd">pip install</span> requests streamlit pywebview</code></div></div></div>
+<div class="step"><div class="content"><h4>Configure API Key</h4><div class="code-block"><code><span class="cmd">cp</span> mykey_template.py mykey.py
+<span class="comment"># Edit mykey.py and fill in your LLM API Key</span></code></div></div></div>
+<div class="step"><div class="content"><h4>Launch</h4><div class="code-block"><code><span class="cmd">python</span> launch.pyw</code></div></div></div>
+</div>
+
+<h3>Alternative: uv (for experienced Python users)</h3>
+<div class="code-block"><code><span class="cmd">git clone</span> https://github.com/weiwei0450/FreeBaby.git
+<span class="cmd">cd</span> FreeBaby
+<span class="cmd">uv pip install</span> -e ".[ui]"
+<span class="cmd">cp</span> mykey_template.py mykey.py
+<span class="cmd">python</span> launch.pyw</code></div>
+</section>
+
+<section id="getting-started">
+<h2>Getting Started (Beginner Friendly)</h2>
+<h3>1. Install Python</h3>
+<p><strong>Mac:</strong> Open Terminal and run <code>brew install python</code> (or install Homebrew first if needed).</p>
+<p><strong>Windows:</strong> Download from <a href="https://www.python.org/downloads/">python.org</a>. <strong>Check "Add Python to PATH"</strong> during install.</p>
+
+<h3>2. Configure API Key</h3>
+<p>Edit <code>mykey.py</code> and fill in your LLM API key. Supports:</p>
+<ul>
+<li><strong>Claude</strong> (Anthropic) &mdash; Recommended</li>
+<li><strong>Gemini</strong> (Google) &mdash; Free tier available</li>
+<li><strong>Kimi</strong> (Moonshot) &mdash; Chinese-friendly</li>
+<li><strong>MiniMax</strong> &mdash; Free tier available</li>
+<li><strong>DeepSeek</strong> &mdash; Cost-effective</li>
+<li>And more OpenAI-compatible endpoints</li>
+</ul>
+
+<h3>3. Launch</h3>
+<div class="code-block"><code><span class="cmd">python</span> launch.pyw</code></div>
+<p>This opens the desktop GUI (pywebview). You can also use:</p>
+<ul>
+<li><code>python ga.py</code> &mdash; Terminal mode</li>
+<li><code>streamlit run frontends/stapp2.py</code> &mdash; Web UI</li>
+</ul>
+
+<h3>4. Start Using</h3>
+<p>Just type natural language commands in the chat:</p>
+<ul>
+<li>"Open Chrome and search for the latest AI news"</li>
+<li>"Create a Python script that monitors Bitcoin price"</li>
+<li>"Read my WeChat message database and summarize"</li>
+<li>"Find all PDF files on my desktop and list them"</li>
+</ul>
+</section>
+
+<section id="contributing">
+<h2>Contributing</h2>
+<p>FreeBaby welcomes contributions! Here&rsquo;s how to get involved:</p>
+<ul>
+<li><strong>Bug Reports:</strong> Open an issue with reproduction steps</li>
+<li><strong>Feature Requests:</strong> Describe your use case in an issue</li>
+<li><strong>Code:</strong> Fork, branch, commit, PR. Keep changes focused.</li>
+<li><strong>Skills:</strong> Share your evolved skills with the community</li>
+</ul>
+<p>See <a href="https://github.com/weiwei0450/FreeBaby/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> for details.</p>
+</section>
+
+</div>
+
+<footer>
+<p>FreeBaby &copy; 2026 &mdash; Built with ~3K lines of seed code that grows with you</p>
+<p><a href="https://github.com/weiwei0450/FreeBaby">GitHub</a> &middot; <a href="https://github.com/weiwei0450/FreeBaby/blob/main/GETTING_STARTED.md">Full Guide</a></p>
+</footer>
+
+</body>
+</html>
