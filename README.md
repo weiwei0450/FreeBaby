@@ -113,6 +113,55 @@ python launch.pyw
 
 Full guide: [GETTING_STARTED.md](GETTING_STARTED.md)
 
+### 🖥️ Launch Modes
+
+FreeBaby provides three launch modes. Choose what fits your workflow:
+
+| Mode | Command | UI | Best for |
+|------|---------|-----|----------|
+| **Desktop Window** (recommended) | `python launch.pyw` | Native pywebview window | Daily use — full-featured, auto-paste, idle monitor |
+| **Service Manager** | `python hub.pyw` | tkinter panel | Running multiple services at once (Web + Bot + Scheduler) |
+| **Browser** | `streamlit run frontends/stapp.py --server.port 19590` | Browser tab at `localhost:19590` | Debugging, headless/server environments |
+
+#### `launch.pyw` — Desktop Window (Recommended)
+
+```bash
+python launch.pyw                      # Default: Streamlit Web UI in a native window
+python launch.pyw --tg                 # + Telegram Bot
+python launch.pyw --qq --tg            # + QQ + Telegram
+python launch.pyw --feishu --wecom     # + Feishu + WeCom
+python launch.pyw --dingtalk           # + DingTalk
+python launch.pyw --sched              # + Scheduler (cron tasks)
+```
+
+- Native desktop window (pywebview), no browser dependency
+- Clipboard paste hook: paste screenshots directly into the input box
+- Idle monitor: auto-triggers autonomous tasks after 30 min idle
+- Window auto-positioned to right side of screen
+
+#### `hub.pyw` — Service Manager
+
+```bash
+python hub.pyw
+```
+
+- Pure tkinter, zero third-party dependencies
+- Auto-discovers all services from `reflect/` and `frontends/`
+- Each service has independent start/stop buttons
+- Built-in real-time log viewer
+- Use when you want to run multiple services simultaneously (e.g., Web UI + Telegram Bot + Scheduler)
+
+#### `streamlit run` — Browser Mode
+
+```bash
+streamlit run frontends/stapp.py --server.port 19590
+# Then open http://localhost:19590 in your browser
+```
+
+- The most basic mode — runs the Streamlit app directly
+- No desktop window, no idle monitor, no paste hook
+- Suitable for debugging or headless server deployments
+
 ---
 
 ## 🤖 Bot Interface (Optional)
