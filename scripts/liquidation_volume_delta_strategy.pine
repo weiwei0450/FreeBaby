@@ -1,0 +1,257 @@
+//@version=6
+strategy('Liquidation + Volume Delta Strategy', overlay = true, max_lines_count = 500, max_boxes_count = 120, max_labels_count = 500, default_qty_type = strategy.percent_of_equity, default_qty_value = 30, initial_capital = 10000, commission_type = strategy.commission.percent, commission_value = 0.04, slippage = 1)
+
+// ============================================
+// 参数设置
+// ============================================
+
+// 清算位参数
+maLength = input.int(60, title = 'MA Length', group = '清算位设置')
+h3 = input.float(3.0, title = 'Large Liquidation Level', group = '清算位设置')
+h2 = input.float(2.0, title = 'Middle Liquidation Level', group = '清算位设置')
+h1 = input.float(1.2, title = 'Small Liquidation Level', group = '清算位设置')
+
+// 策略参数
+leverage    = input.int(3, 'Leverage', minval = 1, maxval = 20, group = '策略设置')
+slPct       = input.float(0.5, 'Stop Loss %', minval = 0.1, step = 0.1, group = '策略设置')
+tpPct       = input.float(1.0, 'Take Profit %', minval = 0.1, step = 0.1, group = '策略设置')
+deltaThresh = input.float(0.15, 'Delta Threshold (norm)', minval = 0.05, step = 0.05, group = '策略设置', tooltip = 'Volume Delta归一化阈值，超过才开仓')
+useLiqConfirm = input.bool(true, 'Use Liquidation as Confirm', group = '策略设置')
+cooldownBars  = input.int(3, 'Cooldown Bars After Close', minval = 0, group = '策略设置')
+
+// 显示选项
+showLine = input(true, title = 'Show Lines', group = '显示选项')
+
+// ============================================
+// 第一部分：Liquidation Levels (只保留计算)
+// ============================================
+
+string userSymbol = 'BINANCE' + ':' + string(syminfo.basecurrency) + 'USDT.P'
+string Formula = str.format('{0}_OI', userSymbol)
+OI = request.security(Formula, timeframe.period, close)
+OI_delta = OI - nz(OI[1])
+
+OI_delta_MA = ta.sma(OI_delta, maLength)
+OI_delta_abs = math.abs(OI_delta)
+OI_delta_abs_MA = ta.sma(OI_delta_abs, maLength)
+
+OI_delta_open_h3 = OI_delta_abs >= OI_delta_abs_MA * h3 and OI_delta > 0
+OI_delta_open_h2 = OI_delta_abs >= OI_delta_abs_MA * h2 and OI_delta_abs < OI_delta_abs_MA * h3 and OI_delta > 0
+OI_delta_open_h1 = OI_delta_abs >= OI_delta_abs_MA * h1 and OI_delta_abs < OI_delta_abs_MA * h2 and OI_delta > 0
+
+bool liqEvent = OI_delta_open_h1 or OI_delta_open_h2 or OI_delta_open_h3
+bool liqLarge = OI_delta_open_h2 or OI_delta_open_h3
+
+// 清算事件方向：OI增加+价格下跌=多头被清算(看空) / OI增加+价格上涨=空头被清算(看多)
+bool liqBull = liqEvent and close > open
+bool liqBear = liqEvent and close < open
+
+// ============================================
+// 第二部分：Volume Delta
+// ============================================
+
+tick = input.string('LTF', 'Data from: ', options = ['Ticks', 'LTF'], group = 'Volume Delta 设置')
+res  = input.timeframe('1', group = 'Volume Delta 设置')
+auto = input.bool(true, '', inline = 'auto', group = 'Volume Delta 设置')
+mlt  = input.int(1500, ' Auto ', inline = 'auto', group = 'Volume Delta 设置')
+prem = input.bool(false, 'Premium', group = 'Volume Delta 设置')
+
+colUp  = input.color(#089981, 'Up ',    inline = 'u', group = 'Intrabar Delta')
+colDn  = input.color(#f23645, 'Down',   inline = 'd', group = 'Intrabar Delta')
+
+isTick = tick == 'Ticks'
+isLTF  = tick == 'LTF'
+
+type bin
+    varip float p
+    varip float v
+
+varip float volBl = na
+varip float volBr = na
+varip bin   maxBl = bin.new(na, 0)
+varip bin   maxBr = bin.new(na, 0)
+varip float vl    = na
+varip float cl    = na
+varip float dfP   = na
+varip float dfV   = na
+varip float TdfV  = na
+varip bool  ticksAvailable = false
+
+if isTick
+    if barstate.isnew
+        maxBl.v := 0
+        maxBr.v := 0
+        cl      := open
+        dfP     := 0
+        vl      := volume
+        dfV     := 0
+        TdfV    := 0
+        volBl   := 0
+        volBr   := 0
+    else
+        dfP := close - cl
+        dfV := volume - vl
+        if dfP > 0
+            volBl := volBl + dfV
+            TdfV  := TdfV  + dfV
+            if dfV > maxBl.v
+                maxBl.v := dfV
+                maxBl.p := close
+        else if dfP < 0
+            volBr := volBr + dfV
+            TdfV  := TdfV  + dfV
+            if dfV > maxBr.v
+                maxBr.v := dfV
+                maxBr.p := close
+        cl := close
+        vl := volume
+
+tfS = timeframe.in_seconds(res)
+tfC = timeframe.in_seconds(timeframe.period)
+rs  = auto ? tfC / mlt : tfS
+rs  := prem ? rs : math.max(60, rs)
+rs  := math.max(1, rs)
+res := timeframe.from_seconds(math.min(tfC, rs))
+
+bool useLTF = timeframe.in_seconds(res) < tfC
+
+[bV, sV, nV, tV, aCl] = request.security_lower_tf(
+     syminfo.tickerid, useLTF ? res : '1',
+     [close > open ? volume : 0,
+      close < open ? volume : 0,
+      close == open ? volume : 0,
+      volume,
+      close])
+
+if not ticksAvailable and volBl > 0
+    ticksAvailable := true
+
+bool effectiveTick = isTick or not useLTF
+isAllowed = effectiveTick ? ticksAvailable : tV.size() > 0
+
+ltf_Vup = bV.sum()
+ltf_Vdn = sV.sum()
+
+bullV = effectiveTick ? volBl : ltf_Vup
+bearV = effectiveTick ? volBr : ltf_Vdn
+
+delta = bullV - bearV
+norm  = delta / volume
+
+// ============================================
+// 策略逻辑
+// ============================================
+
+// 方向信号
+bool longSignal  = norm >= deltaThresh     // 买方主导
+bool shortSignal = norm <= -deltaThresh    // 卖方主导
+
+// 清算确认
+bool longConfirm  = not useLiqConfirm or liqBull
+bool shortConfirm = not useLiqConfirm or liqBear
+
+// 持仓管理
+float qtyMult = leverage * 0.3  // 30% * leverage
+float slPrice = close * (1 - slPct / 100)
+float tpPrice = close * (1 + tpPct / 100)
+
+// 冷却期
+var int lastCloseBar = 0
+bool cooled = bar_index - lastCloseBar >= cooldownBars
+
+// 开仓
+if longSignal and longConfirm and strategy.position_size == 0 and cooled and isAllowed
+    strategy.entry('Long', strategy.long, qty = qtyMult)
+    strategy.exit('Long TP/SL', 'Long', stop = close * (1 - slPct / 100), limit = close * (1 + tpPct / 100))
+
+if shortSignal and shortConfirm and strategy.position_size == 0 and cooled and isAllowed
+    strategy.entry('Short', strategy.short, qty = qtyMult)
+    strategy.exit('Short TP/SL', 'Short', stop = close * (1 + slPct / 100), limit = close * (1 - tpPct / 100))
+
+// 平仓信号（反向信号）
+if strategy.position_size > 0 and shortSignal
+    strategy.close('Long', comment = 'Reverse')
+    lastCloseBar := bar_index
+
+if strategy.position_size < 0 and longSignal
+    strategy.close('Short', comment = 'Reverse')
+    lastCloseBar := bar_index
+
+// ============================================
+// 可视化
+// ============================================
+
+// 清算位线
+kline_price = (open + close + high + low) / 4
+i_5xColor   = color.rgb(179, 181, 190, 25)
+i_10xColor  = color.rgb(1,   124, 255, 30)
+i_25xColor  = color.rgb(91,  176,  86, 30)
+i_50xColor  = color.rgb(240, 161,  41, 30)
+i_100xColor = color.rgb(218,  55, 101, 30)
+
+var h3Array = array.new_line()
+var h2Array = array.new_line()
+var h1Array = array.new_line()
+
+numOfLines = 500
+
+f_drawLine(_x1, _x2, _yValue, _lineColor, _style, _width) =>
+    line.new(x1 = _x1, y1 = _yValue, x2 = _x2, y2 = _yValue, color = _lineColor, style = _style, width = _width)
+
+f_append(Array, l) =>
+    if array.size(Array) == numOfLines
+        line.delete(array.shift(Array))
+    array.push(Array, l)
+
+f_calculateLeverage100x(_pv, _ss) => _ss ? _pv * 0.99 : _pv * 1.01
+f_calculateLeverage50x(_pv, _ss)  => _ss ? _pv * 0.98 : _pv * 1.02
+f_calculateLeverage25x(_pv, _ss)  => _ss ? _pv * 0.96 : _pv * 1.04
+f_calculateLeverage10x(_pv, _ss)  => _ss ? _pv * 0.90 : _pv * 1.10
+f_calculateLeverage5x(_pv, _ss)   => _ss ? _pv * 0.80 : _pv * 1.20
+
+int x1v = bar_index
+
+if showLine and OI_delta_open_h3
+    f_append(h3Array, f_drawLine(x1v, x1v, f_calculateLeverage5x(kline_price, true), i_5xColor, line.style_solid, 1))
+    f_append(h3Array, f_drawLine(x1v, x1v, f_calculateLeverage5x(kline_price, false), i_5xColor, line.style_solid, 1))
+    f_append(h3Array, f_drawLine(x1v, x1v, f_calculateLeverage10x(kline_price, true), i_10xColor, line.style_solid, 1))
+    f_append(h3Array, f_drawLine(x1v, x1v, f_calculateLeverage10x(kline_price, false), i_10xColor, line.style_solid, 1))
+    f_append(h3Array, f_drawLine(x1v, x1v, f_calculateLeverage25x(kline_price, true), i_25xColor, line.style_solid, 1))
+    f_append(h3Array, f_drawLine(x1v, x1v, f_calculateLeverage25x(kline_price, false), i_25xColor, line.style_solid, 1))
+    f_append(h3Array, f_drawLine(x1v, x1v, f_calculateLeverage50x(kline_price, true), i_50xColor, line.style_solid, 1))
+    f_append(h3Array, f_drawLine(x1v, x1v, f_calculateLeverage50x(kline_price, false), i_50xColor, line.style_solid, 1))
+    f_append(h3Array, f_drawLine(x1v, x1v, f_calculateLeverage100x(kline_price, true), i_100xColor, line.style_solid, 1))
+    f_append(h3Array, f_drawLine(x1v, x1v, f_calculateLeverage100x(kline_price, false), i_100xColor, line.style_solid, 1))
+
+if showLine and OI_delta_open_h2
+    f_append(h2Array, f_drawLine(x1v, x1v, f_calculateLeverage10x(kline_price, true), i_10xColor, line.style_solid, 1))
+    f_append(h2Array, f_drawLine(x1v, x1v, f_calculateLeverage10x(kline_price, false), i_10xColor, line.style_solid, 1))
+    f_append(h2Array, f_drawLine(x1v, x1v, f_calculateLeverage25x(kline_price, true), i_25xColor, line.style_solid, 1))
+    f_append(h2Array, f_drawLine(x1v, x1v, f_calculateLeverage25x(kline_price, false), i_25xColor, line.style_solid, 1))
+    f_append(h2Array, f_drawLine(x1v, x1v, f_calculateLeverage50x(kline_price, true), i_50xColor, line.style_solid, 1))
+    f_append(h2Array, f_drawLine(x1v, x1v, f_calculateLeverage50x(kline_price, false), i_50xColor, line.style_solid, 1))
+    f_append(h2Array, f_drawLine(x1v, x1v, f_calculateLeverage100x(kline_price, true), i_100xColor, line.style_solid, 1))
+    f_append(h2Array, f_drawLine(x1v, x1v, f_calculateLeverage100x(kline_price, false), i_100xColor, line.style_solid, 1))
+
+if showLine and OI_delta_open_h1
+    f_append(h1Array, f_drawLine(x1v, x1v, f_calculateLeverage25x(kline_price, true), i_25xColor, line.style_dotted, 1))
+    f_append(h1Array, f_drawLine(x1v, x1v, f_calculateLeverage25x(kline_price, false), i_25xColor, line.style_dotted, 1))
+    f_append(h1Array, f_drawLine(x1v, x1v, f_calculateLeverage50x(kline_price, true), i_50xColor, line.style_dotted, 1))
+    f_append(h1Array, f_drawLine(x1v, x1v, f_calculateLeverage50x(kline_price, false), i_50xColor, line.style_dotted, 1))
+    f_append(h1Array, f_drawLine(x1v, x1v, f_calculateLeverage100x(kline_price, true), i_100xColor, line.style_dotted, 1))
+    f_append(h1Array, f_drawLine(x1v, x1v, f_calculateLeverage100x(kline_price, false), i_100xColor, line.style_dotted, 1))
+
+// 延长线
+var line priceLine = na
+if barstate.islast
+    css_line = close > open ? colUp : close < open ? colDn : color.gray
+    if not na(priceLine)
+        line.delete(priceLine)
+    priceLine := line.new(bar_index, close, bar_index + 1, close, color = css_line, style = line.style_dotted, width = 1, extend = extend.right)
+
+// 信号标签
+if longSignal and longConfirm and strategy.position_size == 0
+    label.new(bar_index, low, text = 'L', style = label.style_label_up, color = color.new(colUp, 0), textcolor = color.white, size = size.tiny)
+
+if shortSignal and shortConfirm and strategy.position_size == 0
+    label.new(bar_index, high, text = 'S', style = label.style_label_down, color = color.new(colDn, 0), textcolor = color.white, size = size.tiny)

@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Coinglass OB Monitor",
+  "version": "2.0",
+  "description": "Order book depth + big orders monitor on mergev2 page",
+  "content_scripts": [
+    {
+      "matches": [
+        "*://www.coinglass.com/*",
+        "*://legend.coinglass.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "styles.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": [
+    "notifications"
+  ],
+  "host_permissions": [
+    "*://*.coinglass.com/*"
+  ]
+}
